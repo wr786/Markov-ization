@@ -1,5 +1,3 @@
-// author: wr786
-// 仅供参考使用！如有疑问，欢迎发邮件询问（邮箱在github主页上）
 #include<iostream>
 #include<cstdio>
 #include<string>
@@ -12,7 +10,7 @@ using namespace std;
 // 在二阶情况下，第1~3位为第一个，第4~6位为第二个，第7~9位第三个
 // double matrix[SPAN * SPAN * SPAN + SPAN * SPAN + SPAN];
 map<long long, double> matrix; 
-int visrow[SPAN*SPAN + SPAN], viscol[SPAN];
+int visrow[SPAN*SPAN + SPAN], viscol[SPAN], numrow, numcol;
 // 一阶
 void Markovize_1() {
     int note_pre, note_suf;
@@ -21,6 +19,8 @@ void Markovize_1() {
         matrix[note_pre*SPAN + note_suf]++;
         matrix[note_pre*SPAN + SPAN-1]++; // 直接在读入的时候求和，加速
         note_pre = note_suf;
+        if(!visrow[note_pre]) numrow++;
+        if(!viscol[note_suf]) numcol++;
         visrow[note_pre]++; viscol[note_suf]++;
     }
     for(int i=0; i<SPAN-1; i++) {
@@ -32,15 +32,16 @@ void Markovize_1() {
                 
     }
     // 输出
+    cout << 1*10000 + numrow*100 + numcol; // 代表这是1阶矩阵
     for(int j=0; j<SPAN-1; j++) { // 初始化上指标
         if(viscol[j]) {
-            cout << "\t" << j << ":";
+            cout << "\t" << j;
         }
     }
     cout << endl;
     for(int i=0; i<SPAN-1; i++) {
         if(visrow[i]) {
-            cout << i << ":";
+            cout << i;
             for(int j=0; j<SPAN-1; j++) {
                 if(!viscol[j]) continue;
                 cout << "\t";
@@ -62,6 +63,8 @@ void Markovize_2() {
     while(cin >> note_suf) { // 第SPAN-1位代表sum
         matrix[note_pre1*SPAN*SPAN + note_pre2*SPAN + note_suf]++;
         matrix[note_pre1*SPAN*SPAN + note_pre2*SPAN + SPAN-1]++;
+        if(!visrow[note_pre1*SPAN + note_pre2]) numrow++;
+        if(!viscol[note_suf]) numcol++;
         visrow[note_pre1*SPAN + note_pre2]++; viscol[note_suf]++;
         note_pre1 = note_pre2;
         note_pre2 = note_suf;
@@ -75,16 +78,17 @@ void Markovize_2() {
             }
         }
     // 输出
+    cout << 2*10000 + numrow*100 + numcol; // 代表这是二阶
     for(int k=0; k<SPAN-1; k++) { // 初始化上指标
         if(viscol[k]) {
-            cout << "\t" << k << ":";
+            cout << "\t" << k;
         }
     }
     cout << endl;
     for(int i=0; i<SPAN-1; i++)
         for(int j=0; j<SPAN-1; j++) {
         if(visrow[i*SPAN + j]) {
-            cout << i << " " << j << ":";
+            cout << i << " " << j;
             for(int k=0; k<SPAN-1; k++) {
                 if(!viscol[k]) continue;
                 cout << "\t";
